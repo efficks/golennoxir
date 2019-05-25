@@ -18,6 +18,10 @@ func (t *Temperature) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
+type IState interface {
+	Convert() (*lennox.IState, error)
+}
+
 type CoolState struct {
 	Temperature int    `json:"temperature"`
 	FanSpeed    string `json:"fanSpeed"`
@@ -32,6 +36,17 @@ func (s CoolState) Convert() (*lennox.CoolState, error) {
 		return nil, errors.New("Temperature must be between 18 and 30")
 	}
 	return &lennox.CoolState{s.Temperature, fs}, nil
+}
+
+func (s HeatState) Convert() (*lennox.HeatState, error) {
+	fs, e := lennox.ToFanSpeed(s.FanSpeed)
+	if e != nil {
+		return nil, e
+	}
+	if s.Temperature < 18 || s.Temperature > 30 {
+		return nil, errors.New("Temperature must be between 18 and 30")
+	}
+	return &lennox.HeatState{s.Temperature, fs}, nil
 }
 
 type HeatState struct {

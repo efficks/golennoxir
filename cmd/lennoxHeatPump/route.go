@@ -37,10 +37,16 @@ var routes = Routes{
 		GetState,
 	},
 	Route{
-		"OnState",
+		"CoolState",
 		"PUT",
 		"/cool",
 		PutCoolState,
+	},
+	Route{
+		"HeatState",
+		"PUT",
+		"/heat",
+		PutHeatState,
 	}, /*
 		Route{
 			"OnState",

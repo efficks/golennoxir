@@ -29,7 +29,37 @@ func PutCoolState(w http.ResponseWriter, r *http.Request) {
 
 	fmt.Printf("%+v\n", lennoxState)
 
-	lennox.Apply(lennoxState)
+	err = lennox.Apply(lennoxState)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	w.WriteHeader(http.StatusNoContent)
+}
+
+func PutHeatState(w http.ResponseWriter, r *http.Request) {
+	decoder := json.NewDecoder(r.Body)
+	var s HeatState
+	err := decoder.Decode(&s)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+
+	lennoxState, e := s.Convert()
+	if e != nil {
+		http.Error(w, e.Error(), http.StatusBadRequest)
+		return
+	}
+
+	fmt.Printf("%+v\n", lennoxState)
+
+	err = lennox.Apply(lennoxState)
+	if err != nil {
+		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
 
 	w.WriteHeader(http.StatusNoContent)
 }
