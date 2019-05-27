@@ -37,21 +37,39 @@ var routes = Routes{
 		GetState,
 	},
 	Route{
+		"OffState",
+		"PUT",
+		"/off",
+		PutOffState,
+	},
+	Route{
 		"CoolState",
 		"PUT",
 		"/cool",
 		PutCoolState,
 	},
 	Route{
+		"DryState",
+		"PUT",
+		"/dry",
+		PutDryState,
+	},
+	/*Route{
+		"AutoState",
+		"PUT",
+		"/auto",
+		PutAutoState,
+	},*/
+	Route{
 		"HeatState",
 		"PUT",
 		"/heat",
 		PutHeatState,
-	}, /*
-		Route{
-			"OnState",
-			"PUT",
-			"/off",
-			OffState,
-		}*/
+	},
+	Route{
+		"FanState",
+		"PUT",
+		"/fan",
+		PutFanState,
+	},
 }

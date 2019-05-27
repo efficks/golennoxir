@@ -2,7 +2,6 @@ package lennox
 
 import "strconv"
 import "fmt"
-import "strings"
 import "io/ioutil"
 import "os"
 import "io"
@@ -12,6 +11,8 @@ const TIME_SHORT = 550
 const TIME_LONG = 1550
 const TIME_4000 = 4350
 const TIME_5000 = 5150
+
+const NO_TEMP = 14
 
 const COOL_MODE = 0
 const DRY_MODE = 1
@@ -45,6 +46,14 @@ func (f FanSpeed) Data() string {
 	return fmt.Sprintf("%03s", strconv.FormatInt(int64(f), 2))
 }
 
+func (s OffState) Data() string {
+	f := FAN_NONE.Data()
+	m := strconv.FormatInt(int64(COOL_MODE), 2)
+	t := strconv.FormatInt(NO_TEMP, 2)
+	d := fmt.Sprintf("1010000100%03s%03s0100%04s1111111111111111", f, m, t)
+	return d
+}
+
 func (s CoolState) Data() string {
 	f := s.FanSpeed.Data()
 	m := strconv.FormatInt(int64(COOL_MODE), 2)
@@ -61,12 +70,28 @@ func (s HeatState) Data() string {
 	return d
 }
 
-func flip(s string) string {
+func (s DryState) Data() string {
+	f := FAN_NONE.Data()
+	m := strconv.FormatInt(int64(DRY_MODE), 2)
+	t := strconv.FormatInt(int64(s.Temperature-17), 2)
+	d := fmt.Sprintf("1010000110%03s%03s0100%04s1111111111111111", f, m, t)
+	return d
+}
+
+func (s FanState) Data() string {
+	f := s.FanSpeed.Data()
+	m := strconv.FormatInt(int64(FAN_MODE), 2)
+	t := strconv.FormatInt(NO_TEMP, 2)
+	d := fmt.Sprintf("1010000110%03s%03s0100%04s1111111111111111", f, m, t)
+	return d
+}
+
+/*func flip(s string) string {
 	newString := strings.Replace(s, "0", "2", -1)
 	newString = strings.Replace(newString, "1", "0", -1)
 	newString = strings.Replace(newString, "2", "1", -1)
 	return newString
-}
+}*/
 
 func reverse(s string) string {
 	runes := []rune(s)
@@ -137,7 +162,6 @@ func Apply(state IState) error {
 	data += chk
 
 	encodedData := encode(data)
-	fmt.Printf("%s\n",encodedData)
 
 	tmpfile, err := ioutil.TempFile("", "lennox")
 	if err != nil {

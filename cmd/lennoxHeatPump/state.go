@@ -49,6 +49,21 @@ func (s HeatState) Convert() (*lennox.HeatState, error) {
 	return &lennox.HeatState{s.Temperature, fs}, nil
 }
 
+func (s DryState) Convert() (*lennox.DryState, error) {
+	if s.Temperature < 18 || s.Temperature > 30 {
+		return nil, errors.New("Temperature must be between 18 and 30")
+	}
+	return &lennox.DryState{s.Temperature}, nil
+}
+
+func (s FanState) Convert() (*lennox.FanState, error) {
+	fs, e := lennox.ToFanSpeed(s.FanSpeed)
+	if e != nil {
+		return nil, e
+	}
+	return &lennox.FanState{fs}, nil
+}
+
 type HeatState struct {
 	Temperature int    `json:"temperature"`
 	FanSpeed    string `json:"fanSpeed"`
@@ -58,7 +73,15 @@ type FanState struct {
 	FanSpeed string `json:"fanSpeed"`
 }
 
-type DeshumState struct {
+type DryState struct {
 	Temperature int    `json:"temperature"`
 	FanSpeed    string `json:"fanSpeed"`
 }
+
+type OffState struct {
+}
+/*
+type AutoState struct {
+	Temperature int    `json:"temperature"`
+	FanSpeed    string `json:"fanSpeed"`
+}*/
